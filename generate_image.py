@@ -37,6 +37,7 @@ iterations = int(input("Enter the number of iterations: "))
 devices = []
 for i in range(torch.cuda.device_count()):
 	gpu = torch.cuda.get_device_properties(i)
+	print(gpu)
 	if gpu.total_memory > 8 * 1024 ** 3:  # Check if GPU has more than 8 GB of RAM
 		devices.append(f"cuda:{i}")
 
