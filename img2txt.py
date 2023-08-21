@@ -4,6 +4,9 @@ import sys
 from PIL import Image
 import torch
 import random
+import warnings
+
+warnings.filterwarnings("ignore")
 
 if len(sys.argv) > 1:
 
@@ -12,8 +15,12 @@ if len(sys.argv) > 1:
   available_gpus = []
   for i in range(gpus):
       cuda_cap = torch.cuda.get_device_capability(i)
-      if cuda_cap[0] >= 3 and cuda_cap[1] >= 7:
-          available_gpus.append(i)
+      if cuda_cap[0] >= 3
+          if cupa_cap[0]==3 and cuda_cap[1] >= 7:
+              available_gpus.append(i)
+          elif cupa_cap[0]>3: 
+              available_gpus.append(i)
+
 
   if len(available_gpus) > 0:
       device = torch.device(f'cuda:{random.choice(available_gpus)}')
@@ -22,8 +29,6 @@ if len(sys.argv) > 1:
 
   # Libraries
   from transformers import ViTFeatureExtractor, AutoTokenizer, VisionEncoderDecoderModel
-  
-  print("Filename: " + sys.argv[1])
 
   # Load model
   model_id = "nttdataspain/vit-gpt2-stablediffusion2-lora"
@@ -45,7 +50,7 @@ if len(sys.argv) > 1:
   # Get image and predict
   img = Image.open(sys.argv[1]).convert('RGB')
   pred_prompts = predict_prompts([img], max_length=500)
-  print("Predicted Text: " + pred_prompts[0])
+  print("Filename: " + sys.argv[1] + "\nPredicted Text: " + pred_prompts[0])
 
 else:
   print("Filename missing")
