@@ -1,13 +1,16 @@
+#!/usr/bin/env python
+
 import torch
 from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler  
 from diffusers.utils import export_to_video
 
-pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b")
+pipe = DiffusionPipeline.from_pretrained("cerspense/zeroscope_v2_576w")
+#pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b")
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 pipe.enable_model_cpu_offload()
 
 prompt = input("Give a prompt: ")
-video_frames = pipe(prompt, num_inference_steps=25).frames
+video_frames = pipe(prompt, num_inference_steps=100).frames
 
 # Export as mp4 
 video_path = export_to_video(video_frames)
