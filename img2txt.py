@@ -13,13 +13,13 @@ if len(sys.argv) > 1:
   if len(sys.argv)>2:
     try:
       data=int(sys.argv[2])
+      device = torch.device('cuda:' + str(data))
     except:
       print("Invalid integer")
-      data="cpu"
-      pass
-    device = torch.device('cuda:' + str(data))
+      device = torch.device('cpu')
   else:
     device="cpu"
+    device = torch.device('cpu')
 
   # Load model
   model_id = "nttdataspain/vit-gpt2-stablediffusion2-lora"
