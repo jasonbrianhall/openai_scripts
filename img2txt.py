@@ -15,7 +15,7 @@ if len(sys.argv) > 1:
   available_gpus = []
   for i in range(gpus):
       cuda_cap = torch.cuda.get_device_capability(i)
-      if cuda_cap[0] >= 3
+      if cuda_cap[0] >= 3:
           if cupa_cap[0]==3 and cuda_cap[1] >= 7:
               available_gpus.append(i)
           elif cupa_cap[0]>3: 
