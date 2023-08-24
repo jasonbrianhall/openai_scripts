@@ -70,8 +70,9 @@ for device in devices:
 	output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}.png"
 	if os.path.exists(output_file):
 		# Generate 8 random characters
-		random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
-		output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
+		while os.path.exists(output_file):
+			random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
+			output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
 	thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
 	queue1.put(thread)
 	thread.start()
@@ -90,9 +91,10 @@ while not queue1.empty():
 				threads[device]+=1
 				output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}.png"
 				if os.path.exists(output_file):
-					# Generate 8 random characters
-					random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
-					output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
+					while os.path.exists(output_file):
+						# Generate 8 random characters
+						random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
+						output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
 				thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
 				queue2.put(thread)
 				thread.start()

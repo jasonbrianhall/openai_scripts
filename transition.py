@@ -5,6 +5,7 @@ import fnmatch
 
 pattern=input("Pattern for files: ")
 outputfile=input("outputfilename: ")
+framesperimage=int(input("frames per image: "))
 
 image_files = [f for f in os.listdir('.') if fnmatch.fnmatch(f, pattern)]
 
@@ -26,7 +27,7 @@ for im in images:
   padded[:im.shape[0], :im.shape[1], :] = im
   padded_images.append(padded)
 
-num_frames = 30 * num_images
+num_frames = framesperimage * num_images
 frames = []
 
 for i in np.linspace(0, 1, num=num_frames):

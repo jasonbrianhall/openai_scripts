@@ -4,7 +4,7 @@ import torch
 from PIL import Image  
 from diffusers import StableDiffusionImg2ImgPipeline
 
-device = "cpu" 
+device = "cuda:0" 
 
 model_id_or_path = "runwayml/stable-diffusion-v1-5"
 

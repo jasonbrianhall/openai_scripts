@@ -16,9 +16,9 @@ if len(sys.argv) > 1:
   for i in range(gpus):
       cuda_cap = torch.cuda.get_device_capability(i)
       if cuda_cap[0] >= 3:
-          if cupa_cap[0]==3 and cuda_cap[1] >= 7:
+          if cuda_cap[0]==3 and cuda_cap[1] >= 7:
               available_gpus.append(i)
-          elif cupa_cap[0]>3: 
+          elif cuda_cap[0]>3: 
               available_gpus.append(i)
 
 
@@ -27,6 +27,9 @@ if len(sys.argv) > 1:
   else:
       device = torch.device('cpu')  
 
+  device = torch.device("cuda:2")
+  s=32
+  torch.nn.functional.conv2d(torch.zeros(s, s, s, s, device=device), torch.zeros(s, s, s, s, device=device))
   # Libraries
   from transformers import ViTFeatureExtractor, AutoTokenizer, VisionEncoderDecoderModel
 
