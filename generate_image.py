@@ -7,6 +7,8 @@ import threading
 import math
 from time import sleep
 from queue import Queue
+import random
+import string
 
 def worker(device, prompt, output_file, finish_event, iterations=20):
 	if not device == "cpu":
@@ -43,7 +45,7 @@ for i in range(torch.cuda.device_count()):
 
 if CPUENABLED==True:
 	num_cpus=os.cpu_count()
-	num_threads = max(1, num_cpus // 8)
+	num_threads = max(1, num_cpus // 16)
 	if num_threads<=0:
 		num_threads=1
 	for x in range(0, num_threads):
@@ -66,6 +68,10 @@ for device in devices:
 	temp=threads[device]
 	threads[device]+=1
 	output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}.png"
+	if os.path.exists(output_file):
+		# Generate 8 random characters
+		random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
+		output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
 	thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
 	queue1.put(thread)
 	thread.start()
@@ -83,6 +89,10 @@ while not queue1.empty():
 				temp=threads[device]
 				threads[device]+=1
 				output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}.png"
+				if os.path.exists(output_file):
+					# Generate 8 random characters
+					random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
+					output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
 				thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
 				queue2.put(thread)
 				thread.start()
