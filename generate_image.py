@@ -64,6 +64,7 @@ versionNumber=0
 for device in devices:
 	versionNumber+=1
 	temp=threads[device]
+	threads[device]+=1
 	output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}.png"
 	thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
 	queue1.put(thread)
@@ -79,8 +80,8 @@ while not queue1.empty():
 				versionNumber+=1
 				device=thread.name
 				print("\n\nStarting version", versionNumber, "with device", device, "and prompt", prompt, "and outputbasename", output_base_name)
-				threads[device]+=1
 				temp=threads[device]
+				threads[device]+=1
 				output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}.png"
 				thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
 				queue2.put(thread)
