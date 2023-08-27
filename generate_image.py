@@ -35,13 +35,16 @@ numberofversions = int(input("Enter the number of versions: "))
 
 iterations = int(input("Enter the number of iterations: "))
 
+versioncount=0
 
 devices = []
 
 for i in range(torch.cuda.device_count()):
 	gpu = torch.cuda.get_device_properties(i)
 	if gpu.total_memory > 8 * 1024 ** 3:  # Check if GPU has more than 8 GB of RAM
-		devices.append(f"cuda:{i}")
+		if versioncount<numberofversions:
+			versioncount+=1
+			devices.append(f"cuda:{i}")
 
 if CPUENABLED==True:
 	num_cpus=os.cpu_count()
@@ -49,7 +52,9 @@ if CPUENABLED==True:
 	if num_threads<=0:
 		num_threads=1
 	for x in range(0, num_threads):
-		devices.append("cpu")
+		if versioncount<numberofversions:
+			versioncount+=1
+			devices.append("cpu")
 
 # Create a finish event for each device
 finish_events = {device: threading.Event() for device in devices}
