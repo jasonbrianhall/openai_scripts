@@ -52,7 +52,7 @@ if CPUENABLED==True:
 	if num_threads<=0:
 		num_threads=1
 	for x in range(0, num_threads):
-		if versioncount<numberofversion:	   
+		if versioncount<numberofversions:	   
 			versioncount+=1
 			devices.append("cpu")
 
