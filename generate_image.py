@@ -9,12 +9,28 @@ from time import sleep
 from queue import Queue
 import random
 import string
+import threading
+
+lock = threading.Lock()
+
 
 def worker(device, prompt, output_file, finish_event, iterations=20):
 	if not device == "cpu":
 		torch.backends.cuda.matmul.allow_tf32 = True
-	pipe = StableDiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-2-1", safety_checker=None)
-	
+
+	# Acquire the lock before accessing shared resource
+	lock.acquire()  
+
+	try:
+		pipe = StableDiffusionPipeline.from_pretrained("stabilityai_stable-diffusion-2-1", safety_checker=None)
+	except:
+		pipe = StableDiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-2-1", safety_checker=None)
+		pipe.save_pretrained("stabilityai_stable-diffusion-2-1")
+		pass
+	# Access resource
+	lock.release()
+
+
 	if not device == "cpu":
 		pipe.enable_sequential_cpu_offload(gpu_id=int(device.split(":")[1]))
 
