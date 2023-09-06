@@ -88,7 +88,7 @@ def main():
 		threads[device]+=1
 		model = RealESRGAN(device=device, scale=4)
 		model.load_weights('weights/RealESRGAN_x4.pth')	 	
-		thread = threading.Thread(target=upscale_frame, args=(i, model))
+		thread = threading.Thread(name=device, target=upscale_frame, args=(i, model))
 		queue1.put(thread)
 		thread.start()
 		i+=1
@@ -98,18 +98,19 @@ def main():
 			if not thread.is_alive():
 				thread.join()
 				device=thread.name
+				print("Device name is", device)
 				temp=threads[device]
 				threads[device]+=1
 				model = RealESRGAN(device=device, scale=4)
 				model.load_weights('weights/RealESRGAN_x4.pth')	 	
 				if i<count:
-					thread = threading.Thread(target=upscale_frame, args=(i, model))
+					thread = threading.Thread(name=device, target=upscale_frame, args=(i, model))
 					queue2.put(thread)
 					thread.start()
 					i+=1
 			else:
 				queue2.put(thread)
-			sleep(1)	
+			sleep(0.1)	
 		while not queue2.empty():
 			thread=queue2.get()
 			queue1.put(thread)
