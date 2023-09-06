@@ -12,11 +12,16 @@ from time import sleep
 
 
 # Define upscale function
-def upscale_frame(i, model, total=1):
+def upscale_frame(i, model, devicename="Unknown", total=1):
+	output_file=f'outframes/frame_upscaled{i:0{10}d}.png'
+	if os.path.exists(output_file):
+		print("File {output_file} already exists!!!")
+		return
+		
 	img = Image.open(f'frames/frame{i}.png').convert('RGB')
 	
 	# Upscale loop
-	pbar = tqdm(total=total, desc=f'Upscaling frame{i}')
+	pbar = tqdm(total=total, desc=f'Upscaling frame {i} using device {devicename}')
 	sr_img = None
 	for j in range(total):
 		 pbar.update(1)
@@ -25,7 +30,7 @@ def upscale_frame(i, model, total=1):
 	pbar.close()
 
 	# Save 
-	sr_img.save(f'frames/frame_upscaled{i:0{10}d}.png')
+	sr_img.save(output_file)
 
 def main():
 
@@ -88,7 +93,7 @@ def main():
 		threads[device]+=1
 		model = RealESRGAN(device=device, scale=4)
 		model.load_weights('weights/RealESRGAN_x4.pth')	 	
-		thread = threading.Thread(name=device, target=upscale_frame, args=(i, model))
+		thread = threading.Thread(name=device, target=upscale_frame, args=(i, model, device))
 		queue1.put(thread)
 		thread.start()
 		i+=1
@@ -101,10 +106,10 @@ def main():
 				print("Device name is", device)
 				temp=threads[device]
 				threads[device]+=1
-				model = RealESRGAN(device=device, scale=4)
-				model.load_weights('weights/RealESRGAN_x4.pth')	 	
 				if i<count:
-					thread = threading.Thread(name=device, target=upscale_frame, args=(i, model))
+					model = RealESRGAN(device=device, scale=4)
+					model.load_weights('weights/RealESRGAN_x4.pth')	 	
+					thread = threading.Thread(name=device, target=upscale_frame, args=(i, model, device))
 					queue2.put(thread)
 					thread.start()
 					i+=1
