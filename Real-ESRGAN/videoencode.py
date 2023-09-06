@@ -16,7 +16,8 @@ def upscale_frame(i, model, total=1):
 	img = Image.open(f'frames/frame{i}.png').convert('RGB')
 	
 	# Upscale loop
-	pbar = tqdm(total=total, desc=f'Upscaling frame{i}')
+	print(f"{i:0{n}d}")
+	pbar = tqdm(total=total, desc=f'Upscaling frame{i:0{8}d}')
 	sr_img = None
 	for j in range(total):
 		 pbar.update(1)
