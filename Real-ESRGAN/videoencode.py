@@ -15,7 +15,7 @@ from time import sleep
 def upscale_frame(i, model, devicename="Unknown", total=1):
 	output_file=f'outframes/frame_upscaled{i:0{10}d}.png'
 	if os.path.exists(output_file):
-		print("File {output_file} already exists!!!")
+		print(f"File {output_file} already exists!!!")
 		return
 		
 	img = Image.open(f'frames/frame{i}.png').convert('RGB')
@@ -115,7 +115,7 @@ def main():
 					i+=1
 			else:
 				queue2.put(thread)
-			sleep(0.1)	
+				sleep(0.1)	
 		while not queue2.empty():
 			thread=queue2.get()
 			queue1.put(thread)
