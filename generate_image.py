@@ -10,6 +10,7 @@ from queue import Queue
 import random
 import string
 import threading
+import traceback
 
 lock = threading.Lock()
 
@@ -22,8 +23,9 @@ def worker(device, prompt, output_file, finish_event, iterations=20):
 	lock.acquire()  
 
 	try:
-		pipe = StableDiffusionPipeline.from_pretrained("stabilityai_stable-diffusion-2-1", safety_checker=None)
+		pipe = StableDiffusionPipeline.from_pretrained("./stabilityai_stable-diffusion-2-1", safety_checker=None)
 	except:
+		traceback.print_exc()
 		pipe = StableDiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-2-1", safety_checker=None)
 		pipe.save_pretrained("stabilityai_stable-diffusion-2-1")
 		pass
