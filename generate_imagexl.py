@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import torch
-from diffusers import StableDiffusionPipeline
+from diffusers import DiffusionPipeline as StableDiffusionPipeline
 import os, sys
 import threading
 import math
