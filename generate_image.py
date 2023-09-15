@@ -41,7 +41,6 @@ def worker(device, prompt, output_file, finish_event, iterations=20, model="stab
 		if not device=="cpu":
 			cuda_capabilities = torch.cuda.get_device_capability(device)
 			major, minor = cuda_capabilities
-			print(major, minor)
 			if major >= 6:		
 				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None, torch_dtype=torch.float16, variant="fp16", use_safetensors=False)
 			else:
