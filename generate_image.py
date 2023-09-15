@@ -15,7 +15,10 @@ import traceback
 lock = threading.Lock()
 
 
-def worker(device, prompt, output_file, finish_event, iterations=20):
+def worker(device, prompt, output_file, finish_event, iterations=20, model="stabilityai/stable-diffusion-2-1"):
+	savedmodel="./" + model.replace("/", "_")
+	savedmodel = os.path.abspath(savedmodel)
+	#help(StableDiffusionPipeline.from_pretrained)
 	if not device == "cpu":
 		torch.backends.cuda.matmul.allow_tf32 = True
 
@@ -23,11 +26,30 @@ def worker(device, prompt, output_file, finish_event, iterations=20):
 	lock.acquire()  
 
 	try:
-		pipe = StableDiffusionPipeline.from_pretrained("./stabilityai_stable-diffusion-2-1", safety_checker=None)
+		if not device=="cpu":
+			cuda_capabilities = torch.cuda.get_device_capability(device)
+			major, minor = cuda_capabilities
+			if major >= 6:
+				pipe = StableDiffusionPipeline.from_pretrained(pretrained_model_name_or_path=savedmodel, safety_checker=None, torch_dtype=torch.float16, variant="fp16", use_safetensors=False)
+			else:
+				pipe = StableDiffusionPipeline.from_pretrained(savedmodel, safety_checker=None)
+		else:
+			pipe = StableDiffusionPipeline.from_pretrained(savedmodel, safety_checker=None)
+		
 	except:
 		traceback.print_exc()
-		pipe = StableDiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-2-1", safety_checker=None)
-		pipe.save_pretrained("stabilityai_stable-diffusion-2-1")
+		if not device=="cpu":
+			cuda_capabilities = torch.cuda.get_device_capability(device)
+			major, minor = cuda_capabilities
+			print(major, minor)
+			if major >= 6:		
+				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None, torch_dtype=torch.float16, variant="fp16")
+			else:
+				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None)
+		else:
+			pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None)
+
+		pipe.save_pretrained(savedmodel)
 		pass
 	# Access resource
 	lock.release()
@@ -44,7 +66,8 @@ def worker(device, prompt, output_file, finish_event, iterations=20):
 def main():
 
 	args = sys.argv[1:]
-
+	defaultmodel="stabilityai/stable-diffusion-2-1"
+	model=defaultmodel
 	iterations = -1
 	prompt = None
 	CPUEnabled = False
@@ -61,6 +84,8 @@ def main():
 			CPUEnabled = True 
 		elif args[i] == '-v':
 			numberofversions = int(args[i+1])
+		elif args[i] == '-m':
+			model= args[i+1]
 		elif args[i] == '-o':  
 			output_base_name = args[i+1]
 			print("Setting output_base_name")
@@ -68,7 +93,7 @@ def main():
 			useOpenGL=True
 			print("Setting OpenGL")
 		elif args[i] == '-h':  
-			print(sys.argv[0] + " -i iteraions -p prompt -c (CPU Enabled) -v numberoversions -o outputbasename -O (useopengl instead of CUDA) -h (help)")
+			print(sys.argv[0] + " -i iteraions -p prompt -c (CPU Enabled) -v numberoversions -o outputbasename -O (useopengl instead of CUDA) -m model (defaults to " + defaultmodel + ") -h (help)")
 			sys.exit(1)    
 
 
@@ -132,7 +157,7 @@ def main():
 			while os.path.exists(output_file):
 				random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
 				output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
-		thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
+		thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations, model))
 		queue1.put(thread)
 		thread.start()
 		print("\n\nStarting version", versionNumber, "with device", device, "and prompt", prompt, "and outputbasename", output_base_name)
@@ -154,7 +179,7 @@ def main():
 							# Generate 8 random characters
 							random_string = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(8))
 							output_file = f"{output_base_name}-{device.replace(':', '')}-{temp}-{random_string}.png"
-					thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations))
+					thread = threading.Thread(name=device, target=worker, args=(device, prompt, output_file, finish_events[device], iterations, model))
 					queue2.put(thread)
 					thread.start()
 			else:
