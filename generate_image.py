@@ -32,9 +32,9 @@ def worker(device, prompt, output_file, finish_event, iterations=20, model="stab
 			if major >= 6:
 				pipe = StableDiffusionPipeline.from_pretrained(pretrained_model_name_or_path=savedmodel, safety_checker=None, torch_dtype=torch.float16, variant="fp16", use_safetensors=False)
 			else:
-				pipe = StableDiffusionPipeline.from_pretrained(savedmodel, safety_checker=None)
+				pipe = StableDiffusionPipeline.from_pretrained(savedmodel, safety_checker=None, use_safetensors=False)
 		else:
-			pipe = StableDiffusionPipeline.from_pretrained(savedmodel, safety_checker=None)
+			pipe = StableDiffusionPipeline.from_pretrained(savedmodel, safety_checker=None, use_safetensors=False)
 		
 	except:
 		traceback.print_exc()
@@ -43,11 +43,11 @@ def worker(device, prompt, output_file, finish_event, iterations=20, model="stab
 			major, minor = cuda_capabilities
 			print(major, minor)
 			if major >= 6:		
-				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None, torch_dtype=torch.float16, variant="fp16")
+				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None, torch_dtype=torch.float16, variant="fp16", use_safetensors=False)
 			else:
-				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None)
+				pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None, use_safetensors=False)
 		else:
-			pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None)
+			pipe = StableDiffusionPipeline.from_pretrained(model, safety_checker=None, use_safetensors=False)
 
 		pipe.save_pretrained(savedmodel)
 		pass
